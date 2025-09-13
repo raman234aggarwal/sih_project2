@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automated Attendance System Prototype</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .sidebar {
+            transition: transform 0.3s ease-in-out;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+        }
+        .animate-pulse-fast {
+            animation: pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: .5;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="sidebar absolute md:relative z-20 bg-white w-64 flex-shrink-0 flex-col border-r border-gray-200">
+            <div class="p-4 border-b border-gray-200">
+                <h1 class="text-xl font-bold text-indigo-600 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.414-1.415L11 9.586V6z" clip-rule="evenodd" />
+                    </svg>
+                    AutoAttend
+                </h1>
+            </div>
+            <nav class="flex-1 overflow-y-auto">
+                <ul class="py-4">
+                    <li>
+                        <a href="#" onclick="showPage('dashboard')" class="nav-link active flex items-center px-4 py-3 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" viewBox="0 0 20 20" fill="currentColor"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" /></svg>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="showPage('students')" class="nav-link flex items-center px-4 py-3 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" viewBox="0 0 20 20" fill="currentColor"><path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" /></svg>
+                            Students
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="showPage('liveLog')" class="nav-link flex items-center px-4 py-3 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600">
+                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.05 3.636a1 1 0 011.414 0L10 7.172l3.536-3.536a1 1 0 111.414 1.414L11.414 8.586l3.536 3.535a1 1 0 11-1.414 1.415L10 9.999l-3.536 3.536a1 1 0 01-1.414-1.414L8.586 8.586 5.05 5.05a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                            Live Log
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="showPage('reports')" class="nav-link flex items-center px-4 py-3 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" viewBox="0 0 20 20" fill="currentColor"><path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" /></svg>
+                            Reports
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="showPage('settings')" class="nav-link flex items-center px-4 py-3 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" /></svg>
+                            Settings
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main content -->
+        <main class="flex-1 flex flex-col overflow-y-auto">
+            <header class="flex items-center justify-between p-4 bg-white border-b border-gray-200">
+                <button id="menu-button" class="md:hidden text-gray-500 hover:text-gray-700">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                    </svg>
+                </button>
+                <h2 id="page-title" class="text-2xl font-semibold text-gray-800">Dashboard</h2>
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+                            <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" /></svg>
+                        </span>
+                        <input type="text" class="bg-gray-100 rounded-full py-2 pl-10 pr-4 w-64 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Search...">
+                    </div>
+                    <img class="h-10 w-10 rounded-full object-cover" src="https://placehold.co/100x100/E2E8F0/4A5568?text=User" alt="User avatar">
+                </div>
+            </header>
+
+            <div class="p-6 md:p-8 flex-1 overflow-y-auto">
+                <!-- Dashboard Page -->
+                <div id="dashboard-page" class="page">
+                    <!-- Stats cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div class="bg-white p-6 rounded-lg shadow-sm flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Total Students</p>
+                                <p class="text-3xl font-bold text-gray-800">1,250</p>
+                            </div>
+                             <div class="bg-indigo-100 p-3 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.653-.122-1.28-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.653.122-1.28.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg></div>
+                        </div>
+                         <div class="bg-white p-6 rounded-lg shadow-sm flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Present Today</p>
+                                <p class="text-3xl font-bold text-green-500">1,198</p>
+                            </div>
+                             <div class="bg-green-100 p-3 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></div>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-sm flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Absent Today</p>
+                                <p class="text-3xl font-bold text-red-500">32</p>
+                            </div>
+                             <div class="bg-red-100 p-3 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></div>
+                        </div>
+                         <div class="bg-white p-6 rounded-lg shadow-sm flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Late Today</p>
+                                <p class="text-3xl font-bold text-yellow-500">20</p>
+                            </div>
+                             <div class="bg-yellow-100 p-3 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></div>
+                        </div>
+                    </div>
+                    
+                    <!-- System Status and Recent Activity -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
+                        <!-- System Status -->
+                        <div class="lg:col-span-1 bg-white p-6 rounded-lg shadow-sm">
+                            <h3 class="text-lg font-semibold mb-4">System Status</h3>
+                            <div class="bg-gray-900 rounded-md p-4 text-center">
+                                <p class="text-sm text-gray-400 mb-2">Main Entrance Camera</p>
+                                <div class="relative w-full aspect-video bg-black rounded-lg overflow-hidden">
+                                    <img src="https://placehold.co/600x400/000000/FFFFFF?text=LIVE+FEED" class="w-full h-full object-cover opacity-70">
+                                    <div class="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded animate-pulse-fast">REC</div>
+                                </div>
+                                <div class="mt-4 flex items-center justify-center space-x-2 text-green-400">
+                                    <span class="relative flex h-3 w-3">
+                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                        <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                                    </span>
+                                    <span class="font-medium">SYSTEM ACTIVE</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Recent Activity -->
+                        <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-sm">
+                            <h3 class="text-lg font-semibold mb-4">Recent Activity</h3>
+                            <div class="space-y-4">
+                                <!-- Dummy activity items -->
+                                <div class="flex items-center space-x-4">
+                                    <img class="h-10 w-10 rounded-full" src="https://placehold.co/100x100/E2E8F0/4A5568?text=LS" alt="">
+                                    <div>
+                                        <p class="font-medium">Liam Smith <span class="text-green-500">checked in</span></p>
+                                        <p class="text-sm text-gray-500">ID: 1023, just now</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-4">
+                                    <img class="h-10 w-10 rounded-full" src="https://placehold.co/100x100/CBD5E0/4A5568?text=OW" alt="">
+                                    <div>
+                                        <p class="font-medium">Olivia Wilson <span class="text-green-500">checked in</span></p>
+                                        <p class="text-sm text-gray-500">ID: 1101, 1 minute ago</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-4">
+                                    <img class="h-10 w-10 rounded-full" src="https://placehold.co/100x100/BEE3F8/2C5282?text=NJ" alt="">
+                                    <div>
+                                        <p class="font-medium">Noah Johnson <span class="text-yellow-500">checked in (Late)</span></p>
+                                        <p class="text-sm text-gray-500">ID: 1056, 3 minutes ago</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Students Page -->
+                <div id="students-page" class="page hidden">
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-semibold">Student Directory</h3>
+                            <button class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 text-sm font-medium">Add Student</button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm text-left">
+                                <thead class="bg-gray-50 text-xs text-gray-700 uppercase">
+                                    <tr>
+                                        <th class="px-6 py-3">Name</th>
+                                        <th class="px-6 py-3">Student ID</th>
+                                        <th class="px-6 py-3">Class</th>
+                                        <th class="px-6 py-3">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="bg-white border-b">
+                                        <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap flex items-center"><img src="https://placehold.co/100x100/E2E8F0/4A5568?text=LS" class="h-8 w-8 rounded-full mr-3">Liam Smith</td>
+                                        <td class="px-6 py-4">1023</td>
+                                        <td class="px-6 py-4">Grade 10-A</td>
+                                        <td class="px-6 py-4"><span class="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full">Present</span></td>
+                                    </tr>
+                                    <tr class="bg-white border-b">
+                                        <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap flex items-center"><img src="https://placehold.co/100x100/CBD5E0/4A5568?text=OW" class="h-8 w-8 rounded-full mr-3">Olivia Wilson</td>
+                                        <td class="px-6 py-4">1101</td>
+                                        <td class="px-6 py-4">Grade 11-B</td>
+                                        <td class="px-6 py-4"><span class="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full">Present</span></td>
+                                    </tr>
+                                    <tr class="bg-white border-b">
+                                        <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap flex items-center"><img src="https://placehold.co/100x100/BEE3F8/2C5282?text=NJ" class="h-8 w-8 rounded-full mr-3">Noah Johnson</td>
+                                        <td class="px-6 py-4">1056</td>
+                                        <td class="px-6 py-4">Grade 10-C</td>
+                                        <td class="px-6 py-4"><span class="bg-yellow-100 text-yellow-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full">Late</span></td>
+                                    </tr>
+                                    <tr class="bg-white border-b">
+                                        <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap flex items-center"><img src="https://placehold.co/100x100/FED7D7/9B2C2C?text=EB" class="h-8 w-8 rounded-full mr-3">Emma Brown</td>
+                                        <td class="px-6 py-4">1245</td>
+                                        <td class="px-6 py-4">Grade 12-A</td>
+                                        <td class="px-6 py-4"><span class="bg-red-100 text-red-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full">Absent</span></td>
+                                    </tr>
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Log Page -->
+                <div id="liveLog-page" class="page hidden">
+                     <div class="bg-white p-6 rounded-lg shadow-sm">
+                         <h3 class="text-lg font-semibold mb-4">Live Attendance Log</h3>
+                         <div id="log-container" class="space-y-3 max-h-[60vh] overflow-y-auto pr-2">
+                            <!-- Log entries will be injected here -->
+                         </div>
+                    </div>
+                </div>
+
+                <!-- Reports Page -->
+                <div id="reports-page" class="page hidden">
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <h3 class="text-lg font-semibold mb-4">Generate Reports</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                            <div>
+                                <label for="report-type" class="block mb-2 text-sm font-medium text-gray-900">Report Type</label>
+                                <select id="report-type" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5">
+                                    <option>Daily Summary</option>
+                                    <option>Weekly Attendance</option>
+                                    <option>Monthly Absences</option>
+                                    <option>Individual Student Report</option>
+                                </select>
+                            </div>
+                            <div>
+                               <label for="date-range" class="block mb-2 text-sm font-medium text-gray-900">Date Range</label>
+                               <input type="date" id="date-range" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5">
+                            </div>
+                            <button class="bg-indigo-600 text-white px-4 py-2.5 rounded-md hover:bg-indigo-700 text-sm font-medium">Generate Report</button>
+                        </div>
+                        <div class="mt-8 border-t pt-6 text-center text-gray-500">
+                           <p>Generated report will be displayed here.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Page -->
+                <div id="settings-page" class="page hidden">
+                     <div class="bg-white p-6 rounded-lg shadow-sm max-w-2xl mx-auto">
+                        <h3 class="text-lg font-semibold mb-6">System Settings</h3>
+                        <div class="space-y-6">
+                            <div class="flex items-center justify-between">
+                                <span class="font-medium">Enable Facial Recognition</span>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" value="" class="sr-only peer" checked>
+                                    <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-indigo-300 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                                </label>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="font-medium">Activate QR Code Scanner</span>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" value="" class="sr-only peer">
+                                    <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-indigo-300 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                                </label>
+                            </div>
+                            <div>
+                                <label for="late-threshold" class="block mb-2 text-sm font-medium text-gray-900">Late Arrival Threshold (minutes)</label>
+                                <input type="number" id="late-threshold" value="10" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5">
+                            </div>
+                             <div>
+                                <label for="notification-email" class="block mb-2 text-sm font-medium text-gray-900">Send Absence Alerts to Email</dabel>
+                                <input type="email" id="notification-email" value="admin@example.com" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5">
+                            </div>
+                            <div class="text-right border-t pt-6">
+                                <button class="bg-indigo-600 text-white px-6 py-2 rounded-md hover:bg-indigo-700 font-medium">Save Changes</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const pages = document.querySelectorAll('.page');
+        const navLinks = document.querySelectorAll('.nav-link');
+        const pageTitle = document.getElementById('page-title');
+        const sidebar = document.getElementById('sidebar');
+        const menuButton = document.getElementById('menu-button');
+
+        function showPage(pageId) {
+            // Hide all pages
+            pages.forEach(page => page.classList.add('hidden'));
+            
+            // Show the selected page
+            const activePage = document.getElementById(`${pageId}-page`);
+            if(activePage) {
+                activePage.classList.remove('hidden');
+            }
+
+            // Update page title
+            pageTitle.textContent = pageId.charAt(0).toUpperCase() + pageId.slice(1).replace(/([A-Z])/g, ' $1');
+
+
+            // Update active nav link
+            navLinks.forEach(link => {
+                link.classList.remove('active', 'bg-indigo-50', 'text-indigo-600', 'font-semibold');
+                if (link.getAttribute('onclick') === `showPage('${pageId}')`) {
+                    link.classList.add('active', 'bg-indigo-50', 'text-indigo-600', 'font-semibold');
+                }
+            });
+            
+            // Close sidebar on mobile after navigation
+            if (window.innerWidth < 768) {
+                sidebar.classList.remove('open');
+            }
+        }
+
+        // Mobile menu toggle
+        menuButton.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+        });
+
+        // Close sidebar if clicking outside of it on mobile
+        document.addEventListener('click', (event) => {
+            if (window.innerWidth < 768 && !sidebar.contains(event.target) && !menuButton.contains(event.target)) {
+                sidebar.classList.remove('open');
+            }
+        });
+        
+        // --- Live Log Simulation ---
+        const logContainer = document.getElementById('log-container');
+        const students = [
+            { name: 'Ava Martinez', id: 1120, initials: 'AM', color: 'FEE2E2/DC2626' },
+            { name: 'James Taylor', id: 1088, initials: 'JT', color: 'DBEAFE/3B82F6' },
+            { name: 'Sophia Anderson', id: 1201, initials: 'SA', color: 'D1FAE5/10B981' },
+            { name: 'Benjamin Garcia', id: 1154, initials: 'BG', color: 'FEF3C7/F59E0B' }
+        ];
+
+        let logInterval;
+
+        function addLogEntry() {
+            if (!logContainer) return;
+
+            const student = students[Math.floor(Math.random() * students.length)];
+            const now = new Date();
+            const timeString = now.toLocaleTimeString();
+
+            const logElement = document.createElement('div');
+            logElement.className = 'flex items-center space-x-3 p-2 bg-gray-50 rounded-lg animate-fade-in';
+            logElement.innerHTML = `
+                <img class="h-9 w-9 rounded-full" src="https://placehold.co/100x100/${student.color}?text=${student.initials}" alt="">
+                <div class="flex-1">
+                    <p class="text-sm font-medium">${student.name} <span class="text-green-600">checked in</span></p>
+                    <p class="text-xs text-gray-500">ID: ${student.id} at ${timeString}</p>
+                </div>
+            `;
+            logContainer.prepend(logElement);
+
+            // Keep log size manageable
+            if(logContainer.children.length > 20) {
+                logContainer.lastElementChild.remove();
+            }
+        }
+
+        // Start simulation when Live Log page is visible
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                const page = mutation.target;
+                if (page.id === 'liveLog-page') {
+                    if (!page.classList.contains('hidden')) {
+                        if (!logInterval) {
+                            addLogEntry(); // Add one immediately
+                            logInterval = setInterval(addLogEntry, 3000);
+                        }
+                    } else {
+                        clearInterval(logInterval);
+                        logInterval = null;
+                    }
+                }
+            });
+        });
+
+        observer.observe(document.getElementById('liveLog-page'), { attributes: true });
+
+        // Initial setup
+        showPage('dashboard');
+
+    </script>
+</body>
+</html>
